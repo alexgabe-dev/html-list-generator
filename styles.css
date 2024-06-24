@@ -5,10 +5,11 @@
     --accent-color: #4299e1;
     --border-color: #e2e8f0;
     --backdrop-blur: 10px;
+    --font-family: 'Segoe UI', 'Roboto', sans-serif;
 }
 
 body {
-    font-family: 'Segoe UI', 'Roboto', sans-serif;
+    font-family: var(--font-family);
     color: var(--text-color);
     line-height: 1.6;
     display: flex;
@@ -21,6 +22,15 @@ body {
     background-position: center;
 }
 
+header {
+    position: fixed;
+    top: 0;
+    right: 15px;
+    background-color: rgba(0, 0, 0, 0.2);
+    color: white;
+    padding: 6px 16px;
+    border-radius: 12px;
+}
 
 .card-container {
     width: 90%;
@@ -140,9 +150,8 @@ code {
     padding: 6px 16px;
     border-radius: 12px;
     align-content: center;
-    font-family: Segoe 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif
+    font-family: var(--font-family);
 }
-
 
 #version {
     font-size: 13px;
