@@ -9,15 +9,19 @@
   \_____|\__,_|_.__/ \___/|_|    |_____/ \__,_|_| |_|\__,_|\___/|_|   
                                                                       
     -2024-   -->
+
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>HTML Listázó kód generátor</title>
+        <!-- Prism.js for syntax highlighting -->
         <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/themes/prism-coy.css" rel="stylesheet" />
         <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/prism.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/plugins/line-numbers/prism-line-numbers.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/components/prism-markup.min.js"></script>
+        <!-- Font Awesome for icons -->
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha384-k6RqeWeci5ZR/Lv4MR0sA0FfDOMQkHnh4Oa6ItjP5UWAMmGJE5Hc6Z50X6ivF6I" crossorigin="anonymous">
+        <!-- Custom CSS -->
         <link href="styles.css" rel="stylesheet">
     </head>
     <body>
@@ -28,6 +32,7 @@
         <div class="tracking-card">
             <h1>HTML Listázó kód generátor</h1>
             
+            <!-- Developer controls -->
             <div class="dev-controls">
                 <h3>Fejlesztő Parancsok</h3>
                 <div>
@@ -40,22 +45,33 @@
                 </div>
             </div>
             
+            <!-- Textarea for input -->
             <label for="input">Szöveg:</label>
             <textarea id="input" placeholder="Másold ide a szöveget..."></textarea>
             
+            <!-- Character count display -->
+            <div class="character-count">
+                <span id="charCount">0</span> karakter
+            </div>
+    
+            <!-- Button group for actions -->
             <div class="button-group">
                 <button onclick="convertText()">Konvertálás</button>
                 <button onclick="copyToClipboard()" id="copyButton" class="hidden"><i class="fas fa-copy"></i> Másolás</button>
             </div>
             
+            <!-- Output HTML code -->
             <label for="output">HTML Kód:</label>
             <pre id="output"><code class="language-markup line-numbers"></code></pre>
             
+            <!-- Footer -->
             <p>Gábor Sándor - 2024</p>
         </div>
     </div>
     
+    <!-- JavaScript file -->
     <script src="script.js"></script>
+    
     </body>
     </html>
     
