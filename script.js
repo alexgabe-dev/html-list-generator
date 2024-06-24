@@ -1,32 +1,70 @@
 function generateHtmlListing(text) {
     const lines = text.split('\n');
-    let htmlOutput = "<ul>\n";
-    let sublistOpen = false;
-    const sublistPattern = /^o\s/;
+    let htmlOutput = '';
+    let currentListType = null;
+    let listStack = [];
+
+    const listTypes = {
+        ul: /^-\s/,
+        ol: /^\d+\.\s/,
+        subul: /^o\s/
+    };
+
+    function openList(type) {
+        listStack.push(type);
+        htmlOutput += `<${type}>\n`;
+    }
+
+    function closeList() {
+        const type = listStack.pop();
+        htmlOutput += `</${type}>\n`;
+    }
 
     for (let line of lines) {
         line = line.trim();
         if (!line) continue;
 
-        if (sublistPattern.test(line)) {
-            if (!sublistOpen) {
-                htmlOutput += "    <ul>\n";
-                sublistOpen = true;
+        let newListType = null;
+        for (let type in listTypes) {
+            if (listTypes[type].test(line)) {
+                newListType = type;
+                break;
             }
-            htmlOutput += `        <li>${line.substring(2)}</li>\n`;
-        } else {
-            if (sublistOpen) {
-                htmlOutput += "    </ul>\n";
-                sublistOpen = false;
+        }
+
+        if (newListType && newListType !== currentListType) {
+            while (listStack.length) {
+                closeList();
             }
-            htmlOutput += `    <li>${line}</li>\n`;
+            currentListType = newListType;
+            openList(currentListType);
+        }
+
+        switch (newListType) {
+            case 'ul':
+                htmlOutput += `    <li>${line.substring(2)}</li>\n`;
+                break;
+            case 'ol':
+                htmlOutput += `    <li>${line.replace(/^\d+\.\s/, '')}</li>\n`;
+                break;
+            case 'subul':
+                if (!listStack.includes('ul')) {
+                    openList('ul');
+                }
+                htmlOutput += `    <ul><li>${line.substring(2)}</li></ul>\n`;
+                break;
+            default:
+                if (!currentListType) {
+                    openList('ul');
+                    currentListType = 'ul';
+                }
+                htmlOutput += `    <li>${line}</li>\n`;
         }
     }
 
-    if (sublistOpen) {
-        htmlOutput += "    </ul>\n";
+    while (listStack.length) {
+        closeList();
     }
-    htmlOutput += "</ul>";
 
     return htmlOutput;
 }
@@ -38,12 +76,9 @@ function convertText() {
     outputElement.textContent = htmlOutput;
     Prism.highlightElement(outputElement);
 
-    // Select the copy button
     const copyButton = document.getElementById('copyButton');
-
-    // Check if the copyButton is found
     if (copyButton) {
-        copyButton.classList.toggle('hidden'); // Toggle the 'hidden' class
+        copyButton.classList.toggle('hidden');
     } else {
         console.error('Nincs meg a gomb');
     }
@@ -65,7 +100,6 @@ let devModeActive = false;
 const devControls = document.querySelector('.dev-controls');
 
 document.addEventListener('keydown', function(event) {
-    // Activate dev mode with Ctrl + Shift + D
     if (event.ctrlKey && event.shiftKey && event.key === 'D') {
         devModeActive = !devModeActive;
         devControls.classList.toggle('visible', devModeActive);
@@ -107,4 +141,6 @@ function updateCardAnimation() {
 tiltIntensityInput.oninput = updateCardAnimation;
 animationSpeedInput.oninput = updateCardAnimation;
 
-//
+document.addEventListener('DOMContentLoaded', () => {
+    updateCardAnimation();
+});
