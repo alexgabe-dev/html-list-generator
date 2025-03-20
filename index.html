@@ -1,77 +1,299 @@
 <!DOCTYPE html>
 <html lang="hu">
-<!-- Készítette:
-   _____   __  _                   _____   __            _            
-  / ____| /_/ | |                 / ____| /_/           | |           
- | |  __  __ _| |__   ___  _ __  | (___   __ _ _ __   __| | ___  _ __ 
- | | |_ |/ _` | '_ \ / _ \| '__|  \___ \ / _` | '_ \ / _` |/ _ \| '__|
- | |__| | (_| | |_) | (_) | |     ____) | (_| | | | | (_| | (_) | |   
-  \_____|\__,_|_.__/ \___/|_|    |_____/ \__,_|_| |_|\__,_|\___/|_|   
-                                                                      
-    -2024-   -->
+<head>
+  <meta charset="UTF-8">
+  <title>HTML Lista Konvertáló</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Prism CSS -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" rel="stylesheet" />
+  <style>
+    /* Minimalista animáció a kódblokk megjelenítéséhez */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fadeIn {
+      animation: fadeIn 0.5s ease-out;
+    }
+    /* Prism felülírás: fekete szöveg, fehér háttér */
+    code[class*="language-"] {
+      color: #000;
+      background: #fff;
+    }
+    pre[class*="language-"] {
+      background: #fff;
+      border: 1px solid #000;
+    }
+    /* Modal animációk */
+    .modal-bg {
+      transition: opacity 0.3s ease;
+    }
+    .modal-content {
+      transition: transform 0.3s ease, opacity 0.3s ease;
+      transform: scale(0.95);
+      opacity: 0;
+    }
+    .modal-active .modal-content {
+      transform: scale(1);
+      opacity: 1;
+    }
+  </style>
+</head>
+<body class="bg-white text-black">
+  <!-- Sarokban lévő név és verzió -->
+  <button id="infoBtn" 
+          class="fixed top-2 right-2 text-sm text-gray-700 hover:text-black 
+                 border border-transparent px-2 py-1 rounded cursor-pointer 
+                 transition transform hover:scale-105 focus:outline-none">
+    Gábor Sándor - v0.1.2
+  </button>
 
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>HTML Listázó kód generátor</title>
-        <!-- Prism.js for syntax highlighting -->
-        <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/themes/prism-coy.css" rel="stylesheet" />
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/prism.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/plugins/line-numbers/prism-line-numbers.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/components/prism-markup.min.js"></script>
-        <!-- Font Awesome for icons -->
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha384-k6RqeWeci5ZR/Lv4MR0sA0FfDOMQkHnh4Oa6ItjP5UWAMmGJE5Hc6Z50X6ivF6I" crossorigin="anonymous">
-        <!-- Custom CSS -->
-        <link href="styles.css" rel="stylesheet">
-    </head>
-    <body>
-    <div id="footer">
-        <span id="version">v0.7.4</span>
+  <!-- Információs Modal (alapértelmezetten rejtve) -->
+  <div id="infoModal" 
+       class="hidden fixed inset-0 z-50 items-center justify-center modal-bg bg-black bg-opacity-50 opacity-0">
+    <div class="modal-content bg-white p-6 rounded shadow relative w-80">
+      <!-- Bezáró gomb -->
+      <button id="closeModal" 
+              class="absolute top-2 right-2 text-gray-700 hover:text-black 
+                     text-2xl leading-none font-semibold focus:outline-none">
+        &times;
+      </button>
+      <h2 class="text-xl font-semibold mb-4">A programról</h2>
+      <p class="mb-4 text-sm">
+        Ez a program a „•” és „o” karakterekkel megadott listát konvertálja HTML felsorolásokká.
+        Amennyiben egy sor nem kezdődik bullet karakterrel, azt egyszerű bekezdésként (<code>&lt;p&gt;</code>) jeleníti meg.
+      </p>
+      <!-- GitHub link (ikon + szöveg) -->
+      <a href="https://github.com/alexgabe-dev" 
+         class="inline-flex items-center text-gray-800 hover:text-blue-700 transition"
+         target="_blank" rel="noopener">
+        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path fill-rule="evenodd" clip-rule="evenodd" 
+                d="M12 0C5.37 0 0 5.37 0 12a12 12 0 008.21 11.44c.6.11.82-.26.82-.58v-2.02c-3.34.73-4.05-1.61-4.05-1.61-.55-1.38-1.33-1.75-1.33-1.75-1.09-.75.08-.74.08-.74 
+                1.2.08 1.84 1.24 1.84 1.24 1.07 1.83 2.8 1.3 3.48.99.11-.78.42-1.3.76-1.6-2.66-.3-5.47-1.33-5.47-5.93 
+                0-1.31.47-2.38 1.24-3.22-.12-.3-.54-1.52.12-3.16 0 0 1.01-.32 3.3 1.23A11.49 11.49 0 0112 5.8c1.02.01 2.05.14 3.01.4 
+                2.29-1.55 3.3-1.23 3.3-1.23.66 1.64.24 2.86.12 3.16.77.84 1.24 1.91 1.24 3.22 
+                0 4.61-2.81 5.62-5.48 5.92.43.37.81 1.1.81 2.22v3.29c0 .32.22.69.82.58A12 12 0 0024 12c0-6.63-5.37-12-12-12z">
+          </path>
+        </svg>
+        <span class="ml-2 text-sm font-medium">GitHub oldalam</span>
+      </a>
     </div>
-    <div class="card-container">
-        <div class="tracking-card">
-            <h1>HTML Listázó kód generátor</h1>
-            
-            <!-- Developer controls -->
-            <div class="dev-controls">
-                <h3>Fejlesztő cuccok vagymi</h3>
-                <div>
-                    <label for="tilt-intensity">Tilt:</label>
-                    <input type="number" id="tilt-intensity" value="1" min="1" max="100">
-                </div>
-                <div>
-                    <label for="animation-speed">Animáció (ms):</label>
-                    <input type="number" id="animation-speed" value="300" min="0" max="1000">
-                </div>
-            </div>
-            
-            <!-- Textarea for input -->
-            <label for="input">Szöveg:</label>
-            <textarea id="input" placeholder="Másold ide a szöveget..."></textarea>
-            
-            <!-- Character count display -->
-            <div class="character-count">
-                <span id="charCount">0</span> karakter
-            </div>
-    
-            <!-- Button group for actions -->
-            <div class="button-group">
-                <button onclick="convertText()">Konvertálás</button>
-                <button onclick="copyToClipboard()" id="copyButton" class="hidden"><i class="fas fa-copy"></i> Másolás</button>
-            </div>
-            
-            <!-- Output HTML code -->
-            <label for="output">HTML Kód:</label>
-            <pre id="output"><code class="language-markup line-numbers"></code></pre>
-            
-            <!-- Footer -->
-            <p>Gábor Sándor - 2024</p>
-        </div>
+  </div>
+
+  <div class="min-h-screen flex items-center justify-center p-4">
+    <div class="w-full max-w-2xl p-6 border border-black rounded">
+      <h1 class="text-3xl font-bold mb-4 text-center">HTML Lista Konvertáló</h1>
+      <p class="text-center mb-6">
+        Illessze be a szöveget az alábbi területre, majd nyomja meg az Entert a konvertáláshoz!
+      </p>
+      <textarea id="inputText" placeholder="Illessze be ide a szöveget..." 
+                class="w-full p-3 border border-black rounded mb-4 
+                       focus:outline-none focus:ring-2 focus:ring-black transition" 
+                rows="8"></textarea>
+      <div class="flex justify-center space-x-4 mb-6">
+        <!-- Konvertál gomb (ikon + szöveg) -->
+        <button id="convertBtn" 
+                class="px-4 py-2 border border-black rounded 
+                       hover:bg-black hover:text-white transition 
+                       transform hover:scale-105 focus:outline-none 
+                       inline-flex items-center space-x-2">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2"
+               viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" 
+                  d="M16 18l6-6-6-6M8 6l-6 6 6 6" />
+          </svg>
+          <span>Konvertál</span>
+        </button>
+        <!-- Másolás gomb (ikon + szöveg) -->
+        <button id="copyBtn" 
+                class="px-4 py-2 border border-black rounded 
+                       hover:bg-black hover:text-white transition 
+                       transform hover:scale-105 focus:outline-none
+                       inline-flex items-center space-x-2">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2"
+               viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" 
+                  d="M8 2H16C17.1046 2 18 2.8954 18 4V20C18 21.1046 17.1046 22 16 22H8C6.8954 22 6 21.1046 6 20V4C6 2.8954 6.8954 2 8 2Z" />
+            <path stroke-linecap="round" stroke-linejoin="round" 
+                  d="M8 2C8 3.1046 8.8954 4 10 4H14C15.1046 4 16 3.1046 16 2" />
+          </svg>
+          <span>Másolás</span>
+        </button>
+      </div>
+      
+      <!-- Eredmény blokk: rejtett alapértelmezetten (hidden) -->
+      <div id="resultContainer" class="hidden">
+        <h2 class="text-xl font-semibold mb-2">Eredmény</h2>
+        <pre class="p-4 border border-black rounded overflow-auto w-fit max-w-full animate-fadeIn">
+<code id="outputCode" class="language-html"></code>
+        </pre>
+      </div>
     </div>
+  </div>
+  
+  <!-- Toast popup (alapértelmezetten rejtve) -->
+  <div id="toast"
+       class="fixed bottom-4 left-1/2 transform -translate-x-1/2 
+              bg-black text-white px-4 py-2 rounded shadow 
+              opacity-0 hidden transition-opacity duration-300 z-50">
+    <p id="toastMessage"></p>
+  </div>
+
+  <!-- Prism JS -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script>
+    const convertBtn = document.getElementById('convertBtn');
+    const copyBtn = document.getElementById('copyBtn');
+    const inputTextArea = document.getElementById('inputText');
+    const outputCodeElem = document.getElementById('outputCode');
+    const resultContainer = document.getElementById('resultContainer');
     
-    <!-- JavaScript file -->
-    <script src="script.js"></script>
+    // Toast
+    const toast = document.getElementById('toast');
+    const toastMessage = document.getElementById('toastMessage');
     
-    </body>
-    </html>
+    // Modal
+    const infoBtn = document.getElementById('infoBtn');
+    const infoModal = document.getElementById('infoModal');
+    const closeModal = document.getElementById('closeModal');
+
+    // --- TOAST MEGJELENÍTÉSE ---
+    function showToast(message) {
+      toastMessage.textContent = message;
+      toast.classList.remove('hidden', 'opacity-0');
+      setTimeout(() => {
+        toast.classList.add('opacity-0');
+        setTimeout(() => {
+          toast.classList.add('hidden');
+        }, 300);
+      }, 2000);
+    }
+
+    // --- TYPING ANIMÁCIÓ ---
+    function animateTyping(text, element, speed, callback) {
+      element.textContent = "";
+      let index = 0;
+      const interval = setInterval(() => {
+        element.textContent += text.charAt(index);
+        index++;
+        if (index >= text.length) {
+          clearInterval(interval);
+          if (callback) callback();
+        }
+      }, speed);
+    }
+
+    // --- LISTA KONVERTÁLÁSA / P-BEKEZDÉSSÉ ALAKÍTÁSA ---
+    function convertText() {
+      const inputText = inputTextArea.value;
+      const lines = inputText.split('\n');
+      let output = '';
+      let inList = false;
+      
+      for (let i = 0; i < lines.length; i++) {
+        let line = lines[i].trim();
+        if (line === '') continue;
+        
+        if (line.startsWith('•')) {
+          if (!inList) {
+            output += '<ul>\n';
+            inList = true;
+          }
+          const mainContent = line.substring(1).trim();
+          let subItems = [];
+          while (i + 1 < lines.length && lines[i + 1].trim().startsWith('o')) {
+            i++;
+            let subLine = lines[i].trim().substring(1).trim();
+            subItems.push(subLine);
+          }
+          if (subItems.length > 0) {
+            output += `  <li>${mainContent}\n    <ul>\n`;
+            for (let sub of subItems) {
+              output += `      <li>${sub}</li>\n`;
+            }
+            output += `    </ul>\n  </li>\n`;
+          } else {
+            output += `  <li>${mainContent}</li>\n`;
+          }
+        } else {
+          if (inList) {
+            output += '</ul>\n';
+            inList = false;
+          }
+          output += `<p>${line}</p>\n`;
+        }
+      }
+      if (inList) {
+        output += '</ul>\n';
+      }
+      
+      if (output.trim() !== '') {
+        // Typing animációval jelenítjük meg a kódot
+        animateTyping(output, outputCodeElem, 0, () => {
+          Prism.highlightElement(outputCodeElem);
+          resultContainer.scrollIntoView({ behavior:'smooth' });
+        });
+        const preElem = outputCodeElem.parentElement;
+        preElem.classList.remove('animate-fadeIn');
+        void preElem.offsetWidth;
+        preElem.classList.add('animate-fadeIn');
+        resultContainer.classList.remove('hidden');
+        resultContainer.scrollIntoView({ behavior: 'smooth' });
+      } else {
+        outputCodeElem.textContent = '';
+        resultContainer.classList.add('hidden');
+      }
+    }
+
+    convertBtn.addEventListener('click', convertText);
     
+    // --- KÓD MÁSOLÁSA ---
+    copyBtn.addEventListener('click', function() {
+      const codeText = outputCodeElem.textContent;
+      if (!codeText) {
+        showToast('Nincs mit másolni!');
+        return;
+      }
+      navigator.clipboard.writeText(codeText)
+        .then(() => showToast('A kód kimásolva!'))
+        .catch(() => showToast('Hiba történt a másolás során!'));
+    });
+    
+    // --- MODAL MEGNYITÁSA ---
+    infoBtn.addEventListener('click', function() {
+      infoModal.classList.remove('hidden');
+      requestAnimationFrame(() => {
+        infoModal.classList.remove('opacity-0');
+        infoModal.classList.add('flex', 'modal-active');
+      });
+    });
+    
+    // --- MODAL BEZÁRÁSA ---
+    closeModal.addEventListener('click', closeInfoModal);
+    infoModal.addEventListener('click', function(e) {
+      if (e.target === infoModal) {
+        closeInfoModal();
+      }
+    });
+    
+    function closeInfoModal() {
+      infoModal.classList.remove('modal-active');
+      setTimeout(() => {
+        infoModal.classList.add('hidden');
+        infoModal.classList.add('opacity-0');
+        infoModal.classList.remove('flex');
+      }, 300);
+    }
+    
+    // --- AUTOMATIKUS KONVERTÁLÁS ENTER REL ---
+    inputTextArea.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        convertText();
+      }
+    });
+  </script>
+</body>
+</html>
