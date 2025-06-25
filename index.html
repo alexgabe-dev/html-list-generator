@@ -191,19 +191,21 @@
       const lines = inputText.split('\n');
       let output = '';
       let inList = false;
-      
+      // Bullet karakterek
+      const mainBullets = ['•', '-', ''];
+      const subBullet = 'o';
       for (let i = 0; i < lines.length; i++) {
         let line = lines[i].trim();
         if (line === '') continue;
-        
-        if (line.startsWith('•')) {
+        // Fő bullet felismerése
+        if (mainBullets.some(bullet => line.startsWith(bullet))) {
           if (!inList) {
             output += '<ul>\n';
             inList = true;
           }
           const mainContent = line.substring(1).trim();
           let subItems = [];
-          while (i + 1 < lines.length && lines[i + 1].trim().startsWith('o')) {
+          while (i + 1 < lines.length && lines[i + 1].trim().startsWith(subBullet)) {
             i++;
             let subLine = lines[i].trim().substring(1).trim();
             subItems.push(subLine);
