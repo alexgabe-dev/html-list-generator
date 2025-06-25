@@ -195,7 +195,7 @@
       // Bullet karakterek
       const mainBullets = ['•', '-', ''];
       const subBullet = 'o';
-      const orderedRegex = /^\d+\./;
+      const orderedRegex = /^\d+\.\s*/;
       for (let i = 0; i < lines.length; i++) {
         let line = lines[i].trim();
         if (line === '') continue;
