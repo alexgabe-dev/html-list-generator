@@ -61,7 +61,7 @@
       </button>
       <h2 class="text-xl font-semibold mb-4">A programról</h2>
       <p class="mb-4 text-sm">
-        Ez a program a „•” és „o” karakterekkel megadott listát konvertálja HTML felsorolásokká.
+        Ez a program a "•" és "o" karakterekkel megadott listát konvertálja HTML felsorolásokká.
         Amennyiben egy sor nem kezdődik bullet karakterrel, azt egyszerű bekezdésként (<code>&lt;p&gt;</code>) jeleníti meg.
       </p>
       <!-- GitHub link (ikon + szöveg) -->
@@ -191,15 +191,35 @@
       const lines = inputText.split('\n');
       let output = '';
       let inList = false;
+      let inOrderedList = false;
       // Bullet karakterek
       const mainBullets = ['•', '-', ''];
       const subBullet = 'o';
+      const orderedRegex = /^\d+\./;
       for (let i = 0; i < lines.length; i++) {
         let line = lines[i].trim();
         if (line === '') continue;
+        // Számozott lista felismerése
+        if (orderedRegex.test(line)) {
+          if (!inOrderedList) {
+            if (inList) {
+              output += '</ul>\n';
+              inList = false;
+            }
+            output += '<ol>\n';
+            inOrderedList = true;
+          }
+          // Tartalom a szám és pont után
+          const mainContent = line.replace(orderedRegex, '').trim();
+          output += `  <li>${mainContent}</li>\n`;
+        }
         // Fő bullet felismerése
-        if (mainBullets.some(bullet => line.startsWith(bullet))) {
+        else if (mainBullets.some(bullet => line.startsWith(bullet))) {
           if (!inList) {
+            if (inOrderedList) {
+              output += '</ol>\n';
+              inOrderedList = false;
+            }
             output += '<ul>\n';
             inList = true;
           }
@@ -224,11 +244,18 @@
             output += '</ul>\n';
             inList = false;
           }
+          if (inOrderedList) {
+            output += '</ol>\n';
+            inOrderedList = false;
+          }
           output += `<p>${line}</p>\n`;
         }
       }
       if (inList) {
         output += '</ul>\n';
+      }
+      if (inOrderedList) {
+        output += '</ol>\n';
       }
       
       if (output.trim() !== '') {
